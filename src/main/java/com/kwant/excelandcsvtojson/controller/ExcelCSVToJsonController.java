@@ -25,7 +25,7 @@ public class ExcelCSVToJsonController {
     }
 
 
-    @PostMapping("/spreadsheets/parse/upload/custom/consuming")
+    @PostMapping("/spreadsheets/parse")
     public ResponseEntity<Object> convertToJsonUploadFileCustomResponseAsListConsuming(@RequestParam("file") MultipartFile uploadedFile) throws Exception{
 
         if (uploadedFile == null) {
