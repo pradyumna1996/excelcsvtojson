@@ -1,15 +1,19 @@
 package com.kwant.excelandcsvtojson.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kwant.excelandcsvtojson.responsehandler.MyResponseHandler;
 import com.kwant.excelandcsvtojson.service.ExcelCSVToJsonService;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.InputStream;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -52,5 +56,35 @@ public class ExcelCSVToJsonController {
 
 
 
+    @PostMapping("/spreadsheets/parse/csv")
+    public ResponseEntity<Object>     convertToJsonUploadCSVFileCustomResponseAsListConsumingFile(@RequestPart("file") MultipartFile uploadedFile) throws Exception {
+
+        double fileSize = uploadedFile.getSize();
+        String fileName= uploadedFile.getOriginalFilename();
+        String contentType = uploadedFile.getContentType();
+
+
+        System.out.println(fileName);
+
+        Reader reader = new BufferedReader(new InputStreamReader(uploadedFile.getInputStream()));
+
+        List<Object> data = excelCSVToJsonService.csvToJson(uploadedFile);
+
+
+
+        System.out.println("CSV file contains the Data:\n" + data);
+
+        if ( data!= null){
+            return  MyResponseHandler.generateResponse(Boolean.TRUE, HttpStatus.OK,fileName, contentType, uploadedFile.getSize(), data);
+
+        }
+
+        return  MyResponseHandler.generateResponse(Boolean.FALSE, HttpStatus.NO_CONTENT,fileName, contentType, uploadedFile.getSize(), data);
+    }
+
+
 
 }
+
+
+

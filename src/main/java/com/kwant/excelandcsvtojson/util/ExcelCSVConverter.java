@@ -3,12 +3,18 @@ package com.kwant.excelandcsvtojson.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.kwant.excelandcsvtojson.responsehandler.MyResponseHandler;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -100,4 +106,39 @@ public class ExcelCSVConverter {
     }
 
 
-}
+    public List csvToJson(MultipartFile file){
+
+
+        try (Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+
+            CSVParser csvParser = null;
+            try {
+                csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            List<ObjectNode> jsonDataList = new ArrayList<>();
+
+            for (CSVRecord csvRecord : csvParser) {
+                ObjectNode jsonData = new ObjectMapper().createObjectNode();
+                csvRecord.toMap().forEach((key, value) -> {
+                    if (!value.isEmpty()) {
+                        jsonData.put(key, value);
+                    }
+                });
+                if (jsonData.size() > 0) {
+                    jsonDataList.add(jsonData);
+                }
+            }
+            return jsonDataList;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+    }
+

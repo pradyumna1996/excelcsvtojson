@@ -5,6 +5,8 @@ import com.kwant.excelandcsvtojson.service.ExcelCSVToJsonService;
 import com.kwant.excelandcsvtojson.util.ExcelCSVConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,7 +26,18 @@ public class ExcelCSVToJsonServiceImpl implements ExcelCSVToJsonService {
         return data;
     }
 
+    @Override
+    public List csvToJson(MultipartFile file) {
 
+        ExcelCSVConverter converter = new ExcelCSVConverter();
+
+        List data = converter.csvToJson(file);
+
+        System.out.println("Excel file contains the Data:\n" + data);
+
+        return data;
+
+    }
 
 
 }
