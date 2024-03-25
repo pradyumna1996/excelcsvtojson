@@ -13,24 +13,13 @@ public class ExcelCSVToJsonServiceImpl implements ExcelCSVToJsonService {
 
 
 
+    // 1. Excel To JSON
     @Override
-    public List excelToJson(MultipartFile uploadedFile) {
+    public List<Object> excelToJson(MultipartFile uploadedFile) {
 
         ExcelCSVConverter converter = new ExcelCSVConverter();
 
-        List<ObjectNode> data = converter.excelToJsonAsListConsumingFile(uploadedFile);
-
-        System.out.println("Excel file contains the Data:\n" + data);
-
-        return data;
-    }
-
-    @Override
-    public List csvToJson(MultipartFile file) {
-
-        ExcelCSVConverter converter = new ExcelCSVConverter();
-
-        List data = converter.csvToJson(file);
+        List data = converter.excelToJson(uploadedFile);
 
         System.out.println("Excel file contains the Data:\n" + data);
 
@@ -38,6 +27,8 @@ public class ExcelCSVToJsonServiceImpl implements ExcelCSVToJsonService {
 
     }
 
+
+    // 2. Excel to CSV
     @Override
     public List excelToCSV(MultipartFile uploadedFile) {
 
@@ -51,6 +42,22 @@ public class ExcelCSVToJsonServiceImpl implements ExcelCSVToJsonService {
         return data;
 
     }
+
+
+    // 3. CS TO Json
+    @Override
+    public List csvToJson(MultipartFile file) {
+
+        ExcelCSVConverter converter = new ExcelCSVConverter();
+
+        List data = converter.csvToJson(file);
+
+        System.out.println("Excel file contains the Data:\n" + data);
+
+        return data;
+
+    }
+
 
 
 }

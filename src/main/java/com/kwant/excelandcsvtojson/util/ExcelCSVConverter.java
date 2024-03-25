@@ -2,6 +2,7 @@ package com.kwant.excelandcsvtojson.util;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kwant.excelandcsvtojson.responsehandler.MyResponseHandler;
 import org.apache.commons.csv.CSVFormat;
@@ -25,126 +26,49 @@ public class ExcelCSVConverter {
 
     private ObjectMapper mapper = new ObjectMapper();
 
-    public List<ObjectNode> excelToJsonAsListConsumingFile(MultipartFile excel)
-    {
-        ObjectMapper mapper = new ObjectMapper();
-        List<ObjectNode> excelDataList = new ArrayList<>();
+    // 1. Excel To Json
+    public List<ObjectNode> excelToJson(MultipartFile file) {
 
-        try (InputStream inputStream = excel.getInputStream();
+        try (InputStream inputStream = file.getInputStream();
              Workbook workbook = new XSSFWorkbook(inputStream)) {
-            for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
-                Sheet sheet = workbook.getSheetAt(i);
-                String sheetName = sheet.getSheetName();
 
-                Iterator<Row> rowIterator = sheet.iterator();
-                List<String> headers = new ArrayList<>();
+            Sheet sheet = workbook.getSheetAt(0); // Assuming only one sheet
+            Iterator<Row> rowIterator = sheet.iterator();
 
-                while (rowIterator.hasNext()) {
-                    Row row = rowIterator.next();
+            List<ObjectNode> jsonObjectList = new ArrayList<>();
+            Row headerRow = rowIterator.next(); // Assuming the first row is the header row
 
-                    if (row.getRowNum() == 0) {
-                        // Read headers
-                        for (int k = 0; k < row.getLastCellNum(); k++) {
-                            Cell cell = row.getCell(k);
+            while (rowIterator.hasNext()) {
+                Row row = rowIterator.next();
 
-                            if (cell != null && cell.getCellType() == CellType.STRING) {
-                                headers.add(cell.getStringCellValue());
-                            }
+                ObjectNode jsonObject = new ObjectMapper().createObjectNode();
 
-                        }
-                    } else {
-                        // Read data rows
-                        ObjectNode rowData = mapper.createObjectNode();
-
-                        boolean hasData = false;
-
-
-                        for (int k = 0; k < headers.size(); k++) {
-                            Cell cell = row.getCell(k);
-
-                            if (cell != null) {
-
-                                hasData=true;
-
-                                System.out.println(hasData + " "+ k);
-
-                                switch (cell.getCellType()) {
-                                    case FORMULA:
-                                        rowData.put(headers.get(k), cell.getCellFormula());
-                                        break;
-                                    case BOOLEAN:
-                                        rowData.put(headers.get(k), cell.getBooleanCellValue());
-                                        break;
-                                    case NUMERIC:
-                                        DataFormatter dataFormatter = new DataFormatter();
-                                        String formattedValue = dataFormatter.formatCellValue(cell);
-                                        rowData.put(headers.get(k), formattedValue);
-
-                                        break;
-                                    case BLANK:
-
-                                        //    rowData.put(headers.get(k), "");
-
-                                        break;
-                                    default:
-                                        rowData.put(headers.get(k), cell.getStringCellValue());
-                                        break;
-                                }
-                            } /*else {
-                                rowData.put(headers.get(k), "");
-                            }*/
-                        }
-                        if(hasData) {
-                            excelDataList.add(rowData);
+                for (int i = 0; i < headerRow.getLastCellNum(); i++) {
+                    Cell cell = row.getCell(i);
+                    if (cell != null) {
+                        String header = headerRow.getCell(i).getStringCellValue();
+                        String cellValue = getCellValueAsString(cell);
+                        if (cellValue != null && !cellValue.isEmpty()) {
+                            jsonObject.put(header, cellValue);
                         }
                     }
                 }
-            }
 
-            return excelDataList;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return Collections.emptyList();
-    }
-
-
-    public List csvToJson(MultipartFile file){
-
-
-        try (Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
-
-            CSVParser csvParser = null;
-            try {
-                csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            List<ObjectNode> jsonDataList = new ArrayList<>();
-
-            for (CSVRecord csvRecord : csvParser) {
-                ObjectNode jsonData = new ObjectMapper().createObjectNode();
-                csvRecord.toMap().forEach((key, value) -> {
-                    if (!value.isEmpty()) {
-                        jsonData.put(key, value);
-                    }
-                });
-                if (jsonData.size() > 0) {
-                    jsonDataList.add(jsonData);
+                if (jsonObject.size() > 0) {
+                    jsonObjectList.add(jsonObject);
                 }
             }
-            return jsonDataList;
+
+            return jsonObjectList;
 
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
+
     }
 
-
-
+    // 2. excel to csv completed
     public List excelToCSV(MultipartFile file){
 
         try (InputStream inputStream = file.getInputStream();
@@ -189,6 +113,42 @@ public class ExcelCSVConverter {
             return null;
         }
     }
+
+
+    // 3. csv to json completed
+    public List csvToJson(MultipartFile file){
+
+
+        try (Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+
+            CSVParser csvParser = null;
+            try {
+                csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            List<ObjectNode> jsonDataList = new ArrayList<>();
+
+            for (CSVRecord csvRecord : csvParser) {
+                ObjectNode jsonData = new ObjectMapper().createObjectNode();
+                csvRecord.toMap().forEach((key, value) -> {
+                    if (!value.isEmpty()) {
+                        jsonData.put(key, value);
+                    }
+                });
+                if (jsonData.size() > 0) {
+                    jsonDataList.add(jsonData);
+                }
+            }
+            return jsonDataList;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
 
     private String getCellValueAsString(Cell cell) {

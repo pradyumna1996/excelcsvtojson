@@ -8,11 +8,17 @@ import java.util.List;
 @Service
 public interface ExcelCSVToJsonService {
 
+    // 1.Excel To Json
+    List<Object> excelToJson(MultipartFile uploadedFile);
 
-    public List<Object> excelToJson(MultipartFile file);
 
+    // 2. Excel To CSV
+    List<Object> excelToCSV(MultipartFile uploadedFile);
+
+
+    // 3. CSV TO JSON
     public List<Object> csvToJson(MultipartFile file);
 
-    List<Object> excelToCSV(MultipartFile uploadedFile);
+
 
 }
