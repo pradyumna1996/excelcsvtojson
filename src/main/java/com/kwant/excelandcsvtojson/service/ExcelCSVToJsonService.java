@@ -13,4 +13,6 @@ public interface ExcelCSVToJsonService {
 
     public List<Object> csvToJson(MultipartFile file);
 
+    List<Object> excelToCSV(MultipartFile uploadedFile);
+
 }

@@ -61,9 +61,13 @@ public class ExcelCSVConverter {
 
                         for (int k = 0; k < headers.size(); k++) {
                             Cell cell = row.getCell(k);
+
                             if (cell != null) {
+
                                 hasData=true;
+
                                 System.out.println(hasData + " "+ k);
+
                                 switch (cell.getCellType()) {
                                     case FORMULA:
                                         rowData.put(headers.get(k), cell.getCellFormula());
@@ -140,5 +144,74 @@ public class ExcelCSVConverter {
     }
 
 
+
+    public List excelToCSV(MultipartFile file){
+
+        try (InputStream inputStream = file.getInputStream();
+             Workbook workbook = new XSSFWorkbook(inputStream)) {
+
+            Sheet sheet = workbook.getSheetAt(0); // Assuming only one sheet
+            Iterator<Row> rowIterator = sheet.iterator();
+
+            List<String> csvDataList = new ArrayList<>();
+            while (rowIterator.hasNext()) {
+                Row row = rowIterator.next();
+                StringBuilder csvRow = new StringBuilder();
+                Iterator<Cell> cellIterator = row.cellIterator();
+
+                boolean hasData = false;
+
+                boolean isFirstCell = true;
+
+
+                while (cellIterator.hasNext()) {
+                    Cell cell = cellIterator.next();
+
+                    String cellValue = getCellValueAsString(cell);
+                    if (cellValue != null && !cellValue.isEmpty()) {
+                        if (!isFirstCell) {
+                            csvRow.append(",");
+                        }
+                        csvRow.append(cellValue);
+                        hasData = true;
+                    }
+                    isFirstCell = false;
+                }
+
+                if (hasData) {
+                    csvDataList.add(csvRow.toString());
+                }
+            }
+
+            return csvDataList;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
+
+
+    private String getCellValueAsString(Cell cell) {
+        if (cell == null) {
+            return null;
+        }
+        switch (cell.getCellType()) {
+            case STRING:
+                return cell.getStringCellValue();
+            case NUMERIC:
+                DataFormatter dataFormatter = new DataFormatter();
+                return dataFormatter.formatCellValue(cell);
+            case BOOLEAN:
+                return String.valueOf(cell.getBooleanCellValue());
+            case FORMULA:
+                return cell.getCellFormula();
+            default:
+                return null;
+
+        }
+
+    }
+
+
+}
 
