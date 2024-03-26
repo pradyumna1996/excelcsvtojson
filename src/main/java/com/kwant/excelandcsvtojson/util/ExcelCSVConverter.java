@@ -159,20 +159,16 @@ public class ExcelCSVConverter {
         if (cell == null) {
             return null;
         }
-        switch (cell.getCellType()) {
-            case STRING:
-                return cell.getStringCellValue();
-            case NUMERIC:
+        return switch (cell.getCellType()) {
+            case STRING -> cell.getStringCellValue();
+            case NUMERIC -> {
                 DataFormatter dataFormatter = new DataFormatter();
-                return dataFormatter.formatCellValue(cell);
-            case BOOLEAN:
-                return String.valueOf(cell.getBooleanCellValue());
-            case FORMULA:
-                return cell.getCellFormula();
-            default:
-                return null;
-
-        }
+                yield dataFormatter.formatCellValue(cell);
+            }
+            case BOOLEAN -> String.valueOf(cell.getBooleanCellValue());
+            case FORMULA -> cell.getCellFormula();
+            default -> null;
+        };
 
     }
 
