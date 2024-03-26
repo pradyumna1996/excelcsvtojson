@@ -1,24 +1,19 @@
 package com.kwant.excelandcsvtojson.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kwant.excelandcsvtojson.responsehandler.MyResponseHandler;
 import com.kwant.excelandcsvtojson.service.ExcelCSVToJsonService;
-import com.kwant.excelandcsvtojson.util.ExcelCSVConverter;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.List;
 
 @RestController
@@ -49,7 +44,7 @@ public class ExcelCSVToJsonController {
         System.out.println(inputStream.read());
 
         String originalName = uploadedFile.getOriginalFilename();
-        String name = uploadedFile.getName();
+
         String contentType = uploadedFile.getContentType();
 
         System.out.println(originalName);
