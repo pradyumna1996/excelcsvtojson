@@ -37,17 +37,7 @@ public class ExcelCSVToJsonController {
         }
 
 
-        InputStream inputStream = uploadedFile.getInputStream();
 
-        System.out.println(inputStream);
-
-        System.out.println(inputStream.read());
-
-        String originalName = uploadedFile.getOriginalFilename();
-
-        String contentType = uploadedFile.getContentType();
-
-        System.out.println(originalName);
 
         List<Object> data = excelCSVToJsonService.excelToJson(uploadedFile);
 
@@ -55,36 +45,31 @@ public class ExcelCSVToJsonController {
 
         if(!(data ==null)){
 
-        return  MyResponseHandler.generateResponse(Boolean.TRUE, HttpStatus.OK,originalName, contentType, uploadedFile.getSize(), data);
+        return  MyResponseHandler.generateResponse(Boolean.TRUE, HttpStatus.OK, uploadedFile.getOriginalFilename() , uploadedFile.getContentType(),  uploadedFile.getSize(), data);
         }
 
-        return MyResponseHandler.generateResponse(Boolean.FALSE,HttpStatus.OK,originalName,contentType, uploadedFile.getSize(), data);
+        return MyResponseHandler.generateResponse(Boolean.FALSE, HttpStatus.NO_CONTENT, uploadedFile.getOriginalFilename() , uploadedFile.getContentType(),  uploadedFile.getSize(), data);
     }
 
 
 
     // 2. Converting excel to CSV
     @PostMapping("/spreadsheets/parse/csv")
-    public List convertExcelToCsv(@RequestParam("file") MultipartFile uploadedFile) throws Exception {
+    public ResponseEntity<Object> convertExcelToCsv(@RequestParam("file") MultipartFile uploadedFile) throws Exception {
 
-        double fileSize = uploadedFile.getSize();
-        String fileName= uploadedFile.getOriginalFilename();
-        String contentType = uploadedFile.getContentType();
-
-
-        System.out.println(fileName);
-
-        Reader reader = new BufferedReader(new InputStreamReader(uploadedFile.getInputStream()));
 
         List<Object> data = excelCSVToJsonService.excelToCSV(uploadedFile);
 
         System.out.println("CSV file contains the Data:\n" + data);
 
-        if ( data!= null){
-            return  data;
+        if(!(data ==null)){
 
+            return  MyResponseHandler.generateResponse(Boolean.TRUE, HttpStatus.OK, uploadedFile.getOriginalFilename() , uploadedFile.getContentType(),  uploadedFile.getSize(), data);
         }
-        return  data;
+
+        return MyResponseHandler.generateResponse(Boolean.FALSE, HttpStatus.NO_CONTENT, uploadedFile.getOriginalFilename() , uploadedFile.getContentType(),  uploadedFile.getSize(), data);
+
+
     }
 
 
@@ -92,33 +77,20 @@ public class ExcelCSVToJsonController {
     @PostMapping("/convert/csv/json")
     public ResponseEntity<Object>     convertToJsonUploadCSVFileCustomResponseAsListConsumingFile(@RequestPart("file") MultipartFile uploadedFile) throws Exception {
 
-        double fileSize = uploadedFile.getSize();
-        String fileName= uploadedFile.getOriginalFilename();
-        String contentType = uploadedFile.getContentType();
-
-
-        System.out.println(fileName);
-
-        Reader reader = new BufferedReader(new InputStreamReader(uploadedFile.getInputStream()));
-
         List<Object> data = excelCSVToJsonService.csvToJson(uploadedFile);
-
-
 
         System.out.println("CSV file contains the Data:\n" + data);
 
-        if ( data!= null){
-            return  MyResponseHandler.generateResponse(Boolean.TRUE, HttpStatus.OK,fileName, contentType, uploadedFile.getSize(), data);
-
+        if (!(data == null)) {
+            return MyResponseHandler.generateResponse(Boolean.TRUE, HttpStatus.OK, uploadedFile.getOriginalFilename(), uploadedFile.getContentType(), uploadedFile.getSize(), data);
         }
-
-        return  MyResponseHandler.generateResponse(Boolean.FALSE, HttpStatus.NO_CONTENT,fileName, contentType, uploadedFile.getSize(), data);
+        return MyResponseHandler.generateResponse(Boolean.FALSE, HttpStatus.NO_CONTENT, uploadedFile.getOriginalFilename(), uploadedFile.getContentType(), uploadedFile.getSize(), data);
     }
 
 
 
 
-}
+    }
 
 
 

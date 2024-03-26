@@ -41,7 +41,11 @@ public class ExcelCSVToJsonServiceImpl implements ExcelCSVToJsonService {
 
         System.out.println("Excel file contains the Data:\n" + data);
 
-        return data;
+        if(!(data==null)){
+            return data;
+        }
+
+        return null;
 
     }
 

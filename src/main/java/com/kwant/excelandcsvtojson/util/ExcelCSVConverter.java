@@ -81,7 +81,13 @@ public class ExcelCSVConverter {
             Sheet sheet = workbook.getSheetAt(0); // Assuming only one sheet
             Iterator<Row> rowIterator = sheet.iterator();
 
+            if(!rowIterator.hasNext()){
+                return null;
+            }
+
             List<String> csvDataList = new ArrayList<>();
+
+
             while (rowIterator.hasNext()) {
                 Row row = rowIterator.next();
                 StringBuilder csvRow = new StringBuilder();
