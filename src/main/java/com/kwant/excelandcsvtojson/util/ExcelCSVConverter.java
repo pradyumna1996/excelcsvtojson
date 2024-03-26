@@ -29,13 +29,12 @@ public class ExcelCSVConverter {
             Sheet sheet = workbook.getSheetAt(0); // Assuming only one sheet
             Iterator<Row> rowIterator = sheet.iterator();
 
-            if(!rowIterator.hasNext()){
+            if (!rowIterator.hasNext()) {
                 return null;
             }
 
             List<ObjectNode> jsonObjectList = new ArrayList<>();
             Row headerRow = rowIterator.next(); // Assuming the first row is the header row
-
 
 
             while (rowIterator.hasNext()) {
@@ -59,7 +58,7 @@ public class ExcelCSVConverter {
                 }
             }
 
-            if(!jsonObjectList.isEmpty()){
+            if (!jsonObjectList.isEmpty()) {
                 return jsonObjectList;
             }
 
@@ -73,7 +72,7 @@ public class ExcelCSVConverter {
     }
 
     // 2. excel to csv completed
-    public List excelToCSV(MultipartFile file){
+    public List excelToCSV(MultipartFile file) {
 
         try (InputStream inputStream = file.getInputStream();
              Workbook workbook = new XSSFWorkbook(inputStream)) {
@@ -81,7 +80,7 @@ public class ExcelCSVConverter {
             Sheet sheet = workbook.getSheetAt(0); // Assuming only one sheet
             Iterator<Row> rowIterator = sheet.iterator();
 
-            if(!rowIterator.hasNext()){
+            if (!rowIterator.hasNext()) {
                 return null;
             }
 
@@ -126,7 +125,7 @@ public class ExcelCSVConverter {
 
 
     // 3. csv to json completed
-    public List csvToJson(MultipartFile file){
+    public List csvToJson(MultipartFile file) {
 
 
         try (Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
@@ -160,7 +159,6 @@ public class ExcelCSVConverter {
     }
 
 
-
     private String getCellValueAsString(Cell cell) {
         if (cell == null) {
             return null;
@@ -179,5 +177,59 @@ public class ExcelCSVConverter {
     }
 
 
-}
+    //AddingCustomException
+ /*   public List<ObjectNode> excelToJsonCustomException(MultipartFile file) {
 
+
+        try (InputStream inputStream = file.getInputStream();
+             Workbook workbook = new XSSFWorkbook(inputStream)) {
+
+            Sheet sheet = workbook.getSheetAt(0); // Assuming only one sheet
+            Iterator<Row> rowIterator = sheet.iterator();
+
+
+
+            if (!rowIterator.hasNext()) {
+                return null;
+
+            }
+
+            List<ObjectNode> jsonObjectList = new ArrayList<>();
+            Row headerRow = rowIterator.next(); // Assuming the first row is the header row
+
+
+            while (rowIterator.hasNext()) {
+                Row row = rowIterator.next();
+
+                ObjectNode jsonObject = new ObjectMapper().createObjectNode();
+
+                for (int i = 0; i < headerRow.getLastCellNum(); i++) {
+                    Cell cell = row.getCell(i);
+                    if (cell != null) {
+                        String header = headerRow.getCell(i).getStringCellValue();
+                        String cellValue = getCellValueAsString(cell);
+                        if (cellValue != null && !cellValue.isEmpty()) {
+                            jsonObject.put(header, cellValue);
+                        }
+                    }
+                }
+
+
+
+                if (jsonObject.size() > 0) {
+                    jsonObjectList.add(jsonObject);
+                }
+            }
+
+            if (!jsonObjectList.isEmpty()) {
+                return jsonObjectList;
+            }
+            return null;
+
+        } catch (Exception e) {
+            e.getMessage();
+            throw null;
+        }
+    }
+*/
+}

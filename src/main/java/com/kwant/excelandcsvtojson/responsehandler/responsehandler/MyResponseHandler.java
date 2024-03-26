@@ -1,4 +1,4 @@
-package com.kwant.excelandcsvtojson.responsehandler;
+package com.kwant.excelandcsvtojson.responsehandler.responsehandler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
