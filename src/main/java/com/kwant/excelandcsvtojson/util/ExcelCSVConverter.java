@@ -19,7 +19,6 @@ import java.util.List;
 @Service
 public class ExcelCSVConverter {
 
-    private ObjectMapper mapper = new ObjectMapper();
 
     // 1. Excel To Json
     public List<ObjectNode> excelToJson(MultipartFile file) {
