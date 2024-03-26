@@ -35,8 +35,14 @@ public class ExcelCSVConverter {
             Sheet sheet = workbook.getSheetAt(0); // Assuming only one sheet
             Iterator<Row> rowIterator = sheet.iterator();
 
+            if(!rowIterator.hasNext()){
+                return null;
+            }
+
             List<ObjectNode> jsonObjectList = new ArrayList<>();
             Row headerRow = rowIterator.next(); // Assuming the first row is the header row
+
+
 
             while (rowIterator.hasNext()) {
                 Row row = rowIterator.next();
@@ -59,10 +65,14 @@ public class ExcelCSVConverter {
                 }
             }
 
-            return jsonObjectList;
+            if(!jsonObjectList.isEmpty()){
+                return jsonObjectList;
+            }
+
+            return null;
 
         } catch (IOException e) {
-            e.printStackTrace();
+            e.getMessage();
             return null;
         }
 

@@ -58,7 +58,12 @@ public class ExcelCSVToJsonController {
 
         System.out.println("Excel file contains the Data:\n" + data);
 
+        if(!(data ==null)){
+
         return  MyResponseHandler.generateResponse(Boolean.TRUE, HttpStatus.OK,originalName, contentType, uploadedFile.getSize(), data);
+        }
+
+        return MyResponseHandler.generateResponse(Boolean.FALSE,HttpStatus.OK,originalName,contentType, uploadedFile.getSize(), data);
     }
 
 
